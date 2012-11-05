@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+$_SESSION['set'] = 'no';
 
 
 
