@@ -1,8 +1,12 @@
 <?php
 
-session_start();
-
-echo $_GET['choices'];
+function importDocuments()
+{
+	foreach (array_keys($_GET) as $docID)
+	{
+		echo $_GET[$docID];
+	}
+}
 
 
 

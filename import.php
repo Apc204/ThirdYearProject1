@@ -29,7 +29,7 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 </head>
 <body>
 
-<h1>Chose software to import from:</h1><br>
+<h1>Choose software from which to import:</h1><br>
 
 <form action="import.php" METHOD="GET">
 	<select name="software">
