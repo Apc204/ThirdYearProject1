@@ -1,8 +1,14 @@
 <?php
 
 session_start();
-$_SESSION['set'] = 'no';
-
+if (isset($_SESSION['currentDocs']) && !empty($_SESSION['currentDocs']))
+{
+	echo '<h2>Documents currently in library:</h2><br>';
+	foreach ($_SESSION['currentDocs'] as $title)
+	{
+		echo $title['title'].'<br>';
+	}
+}
 
 
 ?>
@@ -12,7 +18,7 @@ $_SESSION['set'] = 'no';
 </head>
 <body>
 
-<h1>Manage References/Citations</h1><br>
+<h2>Import more documents, or export to your chosen software.</h2><br>
 <a href="import.php">
 	<input type="Button" value="Import">
 </a>

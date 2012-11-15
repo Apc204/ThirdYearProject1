@@ -8,32 +8,47 @@ session_start();
 
 
 $_SESSION['docs'] = array();
-echo '*******************************<br>';
+//echo '*******************************<br>';
 
 
 if (isset($_GET['choices0']) && !empty($_GET['choices0']))
 {
-	Print_r (array_keys($_GET));
 	foreach (array_keys($_GET) as $doc)
 	{
 		if (strpos($doc,'choices') === FALSE)
 		{
 			if ($_GET[$doc] == 'Details')
 			{
-				echo 'setting currentDocs to'.$doc;
-				$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
+				if(!(in_array($_SESSION['"'.$doc.'"'], $_SESSION['currentDocs'] )))
+				{
+					$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
+				}
 			}
 			else
 			{
-				$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
-				$consumer2 = $_SESSION['consum'];
-				echo '<br>';
-				echo $consumer2->getToken();
-				echo '<br>';
+				echo in_array($_SESSION['"'.$doc.'"'], $_SESSION['currentDocs']);
+				if(!(in_array($_SESSION['"'.$doc.'"'], $_SESSION['currentDocs'] )))
+				{
+					$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
+					$consumer2 = $_SESSION['consum'];
+					$url = 'http://api.mendeley.com/oapi/library/documents/'.$doc.'/file/'.$_SESSION['"'.$doc.'"']['files'][0]['file_hash'].'/';
+					//Set headers to make php download the file.
+					$title = str_replace(" ","_",$_SESSION['"'.$doc.'"']['title']);
+					header('Content-disposition: attachment; filename='.$title.'.pdf');
+					header('Content-type: application/pdf');
+					$response2 = sendRequest($consumer2, $url);
+					$file = $response2->getResponse();
+					$file = $file->getBody();
+					echo $file;
+				}
+				else
+				{
+					echo 'This document is already in your current library.';
+				}
 			}
 		}
+		//HTTP::redirect('index.php');
 	}
-	Print_r($_SESSION['currentDocs']);
 }
 else
 {
@@ -60,7 +75,7 @@ function setUp()
 function sendRequest($consumer, $url, $method = 'GET')
 {
 	$response = $consumer->sendRequest($url,array(),$method);
-	$response = $consumer->sendRequest('http://api.mendeley.com/oapi/library/',array(),'GET');
+	//$response = $consumer->sendRequest('http://api.mendeley.com/oapi/library/',array(),'GET');
 	return $response;
 	//$docs = $response->getDataFromBody();
 }
@@ -97,10 +112,17 @@ function displayCheckboxes($consumer, $docs)
 		$choice = str_replace("\"","",$choice);
 		$temp = '<b>'.$_SESSION['jsonArray']['title'].'</b> <input type="checkbox" name='.$choice.' value='.$ID.'>,';
 		echo $temp;
-		echo '<select name='.$ID.'>
-		<option value="Details"> Document Details </option>
-		<option value ="Details+Download"> Document Details and Download File </option><br>
-		</select>';
+		if(isset($_SESSION['jsonArray']['files'][0]['file_hash']))
+		{
+			$urlID = 'MDownload.php?ID='.$ID;
+			$urlID = str_replace('"', '',$urlID);
+			echo htmlentities('<a href="'.$urlID.'">');
+			echo '<a href="'.$urlID.'">	<input type="Button" value="Download"> </a><br>';
+		}
+		//echo '<select name='.$ID.'>
+		//<option value="Details"> Document Details </option>
+		//<option value ="Details+Download"> Document Details and Download File </option><br>
+		//</select>';
 		
 		$count++;
 		echo '<br><br>';
