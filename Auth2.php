@@ -6,48 +6,29 @@ require_once 'HTTP.php';
 
 session_start();
 
-
+$bool = true;
 $_SESSION['docs'] = array();
 //echo '*******************************<br>';
 
 
-if (isset($_GET['choices0']) && !empty($_GET['choices0']))
+if (!(isset($_GET['oauth_token']) && !empty($_GET['oauth_token'])))
 {
-	foreach (array_keys($_GET) as $doc)
+	Print_r($_SESSION['currentDocs'][]);
+	foreach ($_GET as $doc)
 	{
-		if (strpos($doc,'choices') === FALSE)
+		foreach ($_SESSION['currentDocs'][] as $one)
 		{
-			if ($_GET[$doc] == 'Details')
+			if ($one['title'] == '"'.$doc.'"')
 			{
-				if(!(in_array($_SESSION['"'.$doc.'"'], $_SESSION['currentDocs'] )))
-				{
-					$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
-				}
-			}
-			else
-			{
-				echo in_array($_SESSION['"'.$doc.'"'], $_SESSION['currentDocs']);
-				if(!(in_array($_SESSION['"'.$doc.'"'], $_SESSION['currentDocs'] )))
-				{
-					$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
-					$consumer2 = $_SESSION['consum'];
-					$url = 'http://api.mendeley.com/oapi/library/documents/'.$doc.'/file/'.$_SESSION['"'.$doc.'"']['files'][0]['file_hash'].'/';
-					//Set headers to make php download the file.
-					$title = str_replace(" ","_",$_SESSION['"'.$doc.'"']['title']);
-					header('Content-disposition: attachment; filename='.$title.'.pdf');
-					header('Content-type: application/pdf');
-					$response2 = sendRequest($consumer2, $url);
-					$file = $response2->getResponse();
-					$file = $file->getBody();
-					echo $file;
-				}
-				else
-				{
-					echo 'This document is already in your current library.';
-				}
+				$bool=false;
 			}
 		}
-		//HTTP::redirect('index.php');
+		if ($bool = true)
+		{
+			echo 'Added '.$_SESSION['"'.$doc.'"'];
+			$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
+		}
+		//HTTP::redirect('library.php');
 	}
 }
 else
@@ -107,23 +88,19 @@ function displayCheckboxes($consumer, $docs)
 		//Print_r($_SESSION[$ID]);
 		
 		
-		//Display name of document along with a checkbox and a dropdown box for user to chose whether to download the file or just details.
+		//Display name of document along with a download button, if a file exists to download.
 		$choice = 'choices'.$count;
 		$choice = str_replace("\"","",$choice);
 		$temp = '<b>'.$_SESSION['jsonArray']['title'].'</b> <input type="checkbox" name='.$choice.' value='.$ID.'>,';
 		echo $temp;
+		//If a file hash exists, print a download button to download the file.
 		if(isset($_SESSION['jsonArray']['files'][0]['file_hash']))
 		{
 			$urlID = 'MDownload.php?ID='.$ID;
 			$urlID = str_replace('"', '',$urlID);
 			echo htmlentities('<a href="'.$urlID.'">');
 			echo '<a href="'.$urlID.'">	<input type="Button" value="Download"> </a><br>';
-		}
-		//echo '<select name='.$ID.'>
-		//<option value="Details"> Document Details </option>
-		//<option value ="Details+Download"> Document Details and Download File </option><br>
-		//</select>';
-		
+		}		
 		$count++;
 		echo '<br><br>';
 	}
