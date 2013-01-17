@@ -1,3 +1,38 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
+	<link type="text/css" rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+	<style type="text/css">
+		body {
+			padding-left: 30px;
+			padding-right: 30px;
+			padding-top: 60px;
+			padding-bottom: 40px;
+			}
+	</style>
+	<script src="js/bootstrap.js"></script>
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="brand" href="index.php"> Reference Manager</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li><a href="index.php">Home</a></li>
+						<li class="active"><a href="import.php">Import References</a></li>
+						<li><a href="uploadForm.php">Manually Add Document</a></li>
+						<li><a href="export.php">Export Library</a></li>
+						<li><a href="library.php">View Library</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
 <?php
 require_once '/HTTP/Request2.php';
 require_once '/HTTP/OAuth.php';
@@ -73,8 +108,8 @@ function displayCheckboxes($consumer, $docs)
 		$_SESSION['docs'] = explode(",",array_keys($elem)[0]);
 	}
 
-	echo '<h1>Chose documents to import:</h1><br>';
-	echo '<form action="Auth2.php" method="GET">';
+	echo '<legend>Choose documents to import:<legend><br>';
+	echo '<form action="Auth2.php" method="GET" class="well">';
 	//Find all details for each document.
 	foreach ($_SESSION['docs'] as $ID)
 	{
@@ -94,7 +129,7 @@ function displayCheckboxes($consumer, $docs)
 		//Display name of document along with a download button, if a file exists to download.
 		$choice = 'choices'.$count;
 		$choice = str_replace("\"","",$choice);
-		$temp = '<b>'.$_SESSION['jsonArray']['title'].'</b> <input type="checkbox" name='.$choice.' value='.$ID.'>,';
+		$temp = '<label class="checkbox">'.$_SESSION['jsonArray']['title'].'<input type="checkbox" name='.$choice.' value='.$ID.'></label>';
 		echo $temp;
 		//If a file hash exists, print a download button to download the file.
 		if(isset($_SESSION['jsonArray']['files'][0]['file_hash']))
@@ -105,9 +140,9 @@ function displayCheckboxes($consumer, $docs)
 			echo '<a href="'.$urlID.'">	<input type="Button" value="Download"> </a><br>';
 		}		
 		$count++;
-		echo '<br><br>';
+		echo '';
 	}
-	echo '<input type="submit" value="Submit"><br></form>';
+	echo '<input type="submit" value="Submit" class="btn btn-primary"><br></form>';
 }
 
 

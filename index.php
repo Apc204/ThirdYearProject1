@@ -17,10 +17,10 @@ session_start();
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
-				<a class="brand" href="index.html"> Reference Manager</a>
+				<a class="brand" href="index.php"> Reference Manager</a>
 				<div class="nav-collapse">
 					<ul class="nav">
-						<li class="active"><a href="index.html">Home</a></li>
+						<li class="active"><a href="index.php">Home</a></li>
 						<li><a href="import.php">Import References</a></li>
 						<li><a href="uploadForm.php">Manually Add Document</a></li>
 						<li><a href="export.php">Export Library</a></li>
@@ -39,10 +39,5 @@ session_start();
 			and will have the option of attaching a file to your new document.<br><br>
 			<b>Export Library:</b> At any time you have the option of exporting the contents of your library to any of the supported software packages, making 
 			it easy to keep all of your references in one place!
-
-
-
-
-
 </body>
 </html>
