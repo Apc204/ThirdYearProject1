@@ -13,27 +13,30 @@ $_SESSION['docs'] = array();
 
 if (!(isset($_GET['oauth_token']) && !empty($_GET['oauth_token'])))
 {
-	Print_r($_SESSION['currentDocs'][]);
 	foreach ($_GET as $doc)
 	{
-		foreach ($_SESSION['currentDocs'][] as $one)
+		$bool = true;
+		foreach ($_SESSION['currentDocs'] as $one)
 		{
-			if ($one['title'] == '"'.$doc.'"')
+			if ($one['title'] == $_SESSION['"'.$doc.'"']['title'])
 			{
-				$bool=false;
+				echo 'Document already in library';
+				$bool = false;
 			}
 		}
-		if ($bool = true)
+		if ($bool == true)
 		{
-			echo 'Added '.$_SESSION['"'.$doc.'"'];
-			$_SESSION['currentDocs'][] = $_SESSION['"'.$doc.'"'];
+			//Add document to current library.
+			echo 'Added '.$_SESSION['"'.$doc.'"']['title'];
+			$_SESSION['currentDocs'][$_SESSION['"'.$doc.'"']['title']] = $_SESSION['"'.$doc.'"'];
 		}
-		//HTTP::redirect('library.php');
+
+		HTTP::redirect('library.php');
 	}
 }
 else
 {
-	unset($_SESSION['currentDocs']);
+	//unset($_SESSION['currentDocs']);
 	$consumer = setUp();
 	$response = sendRequest($consumer, 'http://api.mendeley.com/oapi/library/');
 	$docs = $response->getDataFromBody();
@@ -98,7 +101,7 @@ function displayCheckboxes($consumer, $docs)
 		{
 			$urlID = 'MDownload.php?ID='.$ID;
 			$urlID = str_replace('"', '',$urlID);
-			echo htmlentities('<a href="'.$urlID.'">');
+			//echo htmlentities('<a href="'.$urlID.'">');
 			echo '<a href="'.$urlID.'">	<input type="Button" value="Download"> </a><br>';
 		}		
 		$count++;
