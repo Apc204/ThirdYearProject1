@@ -42,11 +42,11 @@ if(isset($_GET['type']) && !empty($_GET['type']))
 	echo '<form action="uploadFile.php" method="post" class="well"
 			enctype="multipart/form-data">
 			<legend> Enter Document Details ( * required field )</legend> <br>
-			<label> Title: </label> <input type="text" name="title"><br>
-			<label>Authors (Surname followed by initials, seperated by commas):</label> <input type="text" name="authors"><br>
+			<label> Title*: </label> <input type="text" name="title"><br>
+			<label>Authors* (Firstname/Initials followed by surname seperated by commas. e.g "Quentin Tarentino, JRR Tolkein"):</label> <input type="text" name="authors"><br>
 			<label>Keywords:</label> <input type="text" name="keywords"><br>
 			<label>Tags: </label><input type="text" name="tags"><br>
-			<label>Website: </label><input type="text" name="tags"><br>
+			<label>Website: </label><input type="text" name="website"><br>
 			<label>Year:</label> <input type="text" name="year"><br>';
 	
 	switch($_GET['type']) {
@@ -61,7 +61,7 @@ if(isset($_GET['type']) && !empty($_GET['type']))
 			</form>
 			'; break;
 		case 'book':
-			echo 'City Published:</label> <input type="text" name="city"><br>
+			echo '<label>City Published:</label> <input type="text" name="city"><br>
 			<label>Edition:</label> <input type="text" name="edition"><br>
 			<label>Editors: </label><input type="text" name="editors"><br>
 			<label>Pages:</label> <input type="text" name="pages"><br>

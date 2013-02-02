@@ -1,23 +1,24 @@
 <?php
 session_start();
 
-$_SESSION['currentOp'] = 'import';
+$_SESSION['currentOp'] = 'export';
+
 
 if (isset($_GET['software']) && !empty($_GET['software']))
 {
 	switch ($_GET['software'])
 	{
 		case 'Zotero':
-			$redirectpage = 'zoteroImport.php';
+			$redirectpage = 'zoteroExport.php';
 			break;
 		case 'Mendeley':
 			$redirectpage = 'Auth1.php';
 			break;
 		case 'EndNote':
-			$redirectpage = 'endNoteImport.php';
+			$redirectpage = 'endNoteExport.php';
 			break;
 		case 'Refworks':
-			$redirectpage = 'refworksImport.php';
+			$redirectpage = 'refworksExport.php';
 			break;
 	}
 	header('Location: '.$redirectpage);
@@ -49,9 +50,9 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 				<div class="nav-collapse">
 					<ul class="nav">
 						<li><a href="index.php">Home</a></li>
-						<li class="active"><a href="import.php">Import References</a></li>
+						<li><a href="import.php">Import References</a></li>
 						<li><a href="uploadForm.php">Manually Add Document</a></li>
-						<li><a href="export.php">Export Library</a></li>
+						<li class="active"><a href="export.php">Export Library</a></li>
 						<li><a href="library.php">View Library</a></li>
 					</ul>
 				</div>
@@ -59,9 +60,9 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 		</div>
 	</div>
 
-	<legend>Choose software from which to import:</legend><br>
+	<legend>Choose software to export to:</legend><br>
 
-	<form action="import.php" METHOD="GET" class="well">
+	<form action="export.php" METHOD="GET" class="well">
 		<select name="software">
 		<option value="Zotero">Zotero</option>
 		<option value="Mendeley">Mendeley</option>

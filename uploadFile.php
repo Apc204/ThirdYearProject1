@@ -1,16 +1,23 @@
 <?php
 session_start();
 
-
-
 if (isset($_POST['title']) && !empty($_POST['title']))
 {
 	//Parse fields to get them into correct format.
-	parseAuthors();
+	parseNames('authors');
+	if ( isset($_POST['editors']) && !empty($_POST['editors'])) {
+		parseNames('editors');
+	}
+	if ( isset($_POST['keywords']) && !empty($_POST['keywords'])) {
+		$_POST['keywords'] = explode(",",$_POST['keywords']);
+	}
+	if ( isset($_POST['tags']) && !empty($_POST['tags'])) {
+		$_POST['tags'] = explode(",",$_POST['tags']);
+	}
 	//Adds the new document to currentDocs
 	$_SESSION['currentDocs'][$_POST['title']] = $_POST;
-	
-	echo 'Document added to library <br> Add a file to this document or view library.';
+	$_SESSION['oldPOST'] = $_POST;
+	echo 'Document added to library. <br> <legend>Add a file to this document or view library.</legend>';
 	
 	//Print_r($_SESSION['currentDocs']);
 }
@@ -18,39 +25,57 @@ if (isset($_POST['title']) && !empty($_POST['title']))
 //If a file has been uploaded, add it to /uploads/
 if (isset($_FILES["file"]) && !empty($_FILES["file"]))
 {
-	echo "Upload: " . $_FILES["file"]["name"] . "<br>";
-	echo "Type: " . $_FILES["file"]["type"] . "<br>";
-	echo "Size: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
-	echo "Stored in: " . $_FILES["file"]["tmp_name"];
+	//echo "Upload: " . $_FILES["file"]["name"] . "<br>";
+	//echo "Type: " . $_FILES["file"]["type"] . "<br>";
+	//echo "Size: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+	//echo "Stored in: " . $_FILES["file"]["tmp_name"]."<br>";
+	$upload = 1; //Boolean set to 0 if conditions are not sufficient for an upload.
 	
 	$tmp_name = $_FILES["file"]["tmp_name"];
 	$uploads_dir = 'uploads/';
 	$name = $_FILES["file"]["name"];
+	$ext = substr($name, strpos($name,'.'), strlen($name)-1);
+	echo $ext;
 	echo '<br>'.$name.'<br>';
-	if (move_uploaded_file($tmp_name, 'uploads/'.$_FILES['file']['name']))
+	//check size and type of file.
+	if ($_FILES["file"]["size"]>60000000)
 	{
-		$_SESSION['currentDocs'][$_POST['title']]['file'] = $_FILES['file']['name'];
-		echo 'success';
+		echo 'File too big';
+		$upload = 0;
+	}
+	if($ext=='.pdf' && $upload==1)
+	{
+		//Move file, add file location to library array and print out success if the move was successfull.
+		if (move_uploaded_file($tmp_name, 'uploads/'.$_FILES['file']['name']))
+		{
+			Print_r($_SESSION['currentDocs'][$_SESSION['oldPOST']['title']]);
+			$_SESSION['currentDocs'][($_SESSION['oldPOST']['title'])]['file'] = $_FILES['file']['name']; // Add filename as 'file' field to document in library.
+			echo 'success';
+		}
+	}
+	else
+	{
+		echo 'Wrong file type.';
 	}
 }
 
 
-function parseAuthors ()
+function parseNames ($listType)
 {
-	if (isset($_POST['authors']) && !empty($_POST['authors']))
+	if (isset($_POST[$listType]) && !empty($_POST[$listType]))
 	{
 		$authors = array();
 		$temp = array();
-		$string = $_POST['authors'];
+		$string = $_POST[$listType];
 		$temp = explode(',', $string);
 		$count=0;
 		foreach ($temp as $author)
 		{
-			$authors[$count]['Firstname'] = explode(' ', trim($author))[0];
+			$authors[$count]['Firstname/Initials'] = explode(' ', trim($author))[0];
 			$authors[$count]['Surname'] = explode(' ', trim($author))[1];
 			$count++;
 		}
-		$_POST['authors'] = $authors;
+		$_POST[$listType] = $authors;
 	}
 }
 
@@ -60,13 +85,50 @@ function parseAuthors ()
 
 <html>
 <body>
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.css"/>
+	<link type="text/css" rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+	<style type="text/css">
+		body {
+			padding-left: 30px;
+			padding-right: 30px;
+			padding-top: 60px;
+			padding-bottom: 40px;
+			}
+	</style>
+	<script src="js/bootstrap.js"></script>
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="brand" href="index.php"> Reference Manager</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class><a href="index.php">Home</a></li>
+						<li><a href="import.php">Import References</a></li>
+						<li class="active"><a href="uploadForm.php">Manually Add Document</a></li>
+						<li><a href="export.php">Export Library</a></li>
+						<li><a href="library.php">View Library</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 
-<form action="uploadBibtex.php" method="post"
+<form action="uploadFile.php" method="post" class="well"
 enctype="multipart/form-data">
 <label for="file">Filename:</label>
-<input type="file" name="file" id="file"><br>
+<input type="file" name="file" id="file" accept="application/pdf"><br>
+<input type="hidden" name="MAX_FILE_SIZE" value="60000000" />
 <input type="submit" name="submit" value="Submit">
 </form>
+
+<a href="library.php">
+<button class="btn" type="button"> View Library </button>
+</a>
 
 </body>
 </html>
