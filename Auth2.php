@@ -44,8 +44,8 @@ session_start();
 $bool = true;
 $_SESSION['docs'] = array();
 //echo '*******************************<br>';
-
-
+// removed: cast
+$allowedFields = explode(",",'abstract,type,authors,city,country,date,editors,isbn,issn,isRead,isStarred,isAuthor,keywords,notes,pmid,,publisher,revision,tags,title,translators,website,year');
 if (!(isset($_GET['oauth_token']) && !empty($_GET['oauth_token'])))
 {
 	foreach ($_GET as $doc)
@@ -63,11 +63,28 @@ if (!(isset($_GET['oauth_token']) && !empty($_GET['oauth_token'])))
 		{
 			//Add document to current library.
 			echo 'Added '.$_SESSION['"'.$doc.'"']['title'];
-			$_SESSION['currentDocs'][$_SESSION['"'.$doc.'"']['title']] = $_SESSION['"'.$doc.'"'];
+			foreach ($_SESSION['"'.$doc.'"'] as $index => $value) 
+			{
+				// Only add allowed details to be added to library
+				if (in_array($index, $allowedFields))
+				{
+					$_SESSION['currentDocs'][$_SESSION['"'.$doc.'"']['title']][$index] = $value;
+				}
+				//$_SESSION['currentDocs'][$_SESSION['"'.$doc.'"']['title']] = $_SESSION['"'.$doc.'"'];
+				/*parseNames('authors', $doc);
+				parseNames('editors', $doc);
+				parseNames('producers', $doc);
+				parseNames('cast', $doc);
+				parseArray('keywords', $doc);
+				parseArray('tags', $doc);
+				parseNames('producers', $doc);*/
+			}
+			
 		}
-
-		HTTP::redirect('library.php');
+		
+		
 	}
+	HTTP::redirect('library.php');
 }
 else
 {
@@ -84,10 +101,45 @@ function setUp()
 {
 	$consumer = new HTTP_OAuth_Consumer('d8e4a5bdaedbd31f6f322437d0a38c1805060529f','161a05857f0c8293e067644f01f0d12d', $_SESSION['token'], $_SESSION['token_secret']);
 	$consumer->getAccessToken('http://api.mendeley.com/oauth/access_token/',$_GET['oauth_verifier'],array(),'GET');
-	$_SESSION['token'] = $consumer->getToken();
-	$_SESSION['token_secret'] = $consumer->getTokenSecret();
+	//$_SESSION['token'] = $consumer->getToken();
+	//$_SESSION['token_secret'] = $consumer->getTokenSecret();
 	$_SESSION['consum'] = $consumer;
 	return $consumer;
+}
+
+function parseNames ($string, $document)
+{
+	if (isset($_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string]) && !empty($_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string]))
+	{
+		$authors = array();
+		$temp = array();
+		$string = $_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string];
+		if(gettype($string) == 'string') //check that it is in string format and not already an array
+		{
+			$temp = explode(',', $string);
+			$count=0;
+			foreach ($temp as $author)
+			{
+				$authors[$count]['forename'] = explode(' ', trim($author))[0];
+				$authors[$count]['surname'] = explode(' ', trim($author))[1];
+				$count++;
+			}
+			$_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string] = $authors;
+		}
+	}
+}
+
+function parseArray($string, $document)
+{
+	if (isset($_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string]) && !empty($_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string]) && gettype($_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string]) == 'string')
+	{
+		$array = array();
+		$array = explode(",",$_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string]); //explodes on ","
+		// Trim spaces off each element in the array
+		foreach ($array as $elem)
+			$elem = trim($elem);
+		$_SESSION['currentDocs'][$_SESSION['"'.$document.'"']['title']][$string] = $array;	
+	}
 }
 
 //Send the request to specified url

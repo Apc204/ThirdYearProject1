@@ -3,17 +3,16 @@ session_start();
 
 if (isset($_POST['title']) && !empty($_POST['title']))
 {
+	//Set type field
+	$_POST['type'] = $_GET['type'];
 	//Parse fields to get them into correct format.
 	parseNames('authors');
-	if ( isset($_POST['editors']) && !empty($_POST['editors'])) {
-		parseNames('editors');
-	}
-	if ( isset($_POST['keywords']) && !empty($_POST['keywords'])) {
-		$_POST['keywords'] = explode(",",$_POST['keywords']);
-	}
-	if ( isset($_POST['tags']) && !empty($_POST['tags'])) {
-		$_POST['tags'] = explode(",",$_POST['tags']);
-	}
+	parseNames('editors');
+	parseNames('producers');
+	parseNames('cast');
+	parseArray('keywords');
+	parseArray('tags');
+	
 	//Adds the new document to currentDocs
 	$_SESSION['currentDocs'][$_POST['title']] = $_POST;
 	$_SESSION['oldPOST'] = $_POST;
@@ -62,20 +61,36 @@ if (isset($_FILES["file"]) && !empty($_FILES["file"]))
 
 function parseNames ($listType)
 {
-	if (isset($_POST[$listType]) && !empty($_POST[$listType]))
+	if (isset($_POST[$listType]))
 	{
 		$authors = array();
 		$temp = array();
 		$string = $_POST[$listType];
 		$temp = explode(',', $string);
 		$count=0;
-		foreach ($temp as $author)
+		if(!empty($_POST[$listType]))
 		{
-			$authors[$count]['Firstname/Initials'] = explode(' ', trim($author))[0];
-			$authors[$count]['Surname'] = explode(' ', trim($author))[1];
-			$count++;
+			foreach ($temp as $author)
+			{
+				$authors[$count]['forename'] = explode(' ', trim($author))[0];
+				$authors[$count]['surname'] = explode(' ', trim($author))[1];
+				$count++;
+			}
 		}
 		$_POST[$listType] = $authors;
+	}
+}
+
+function parseArray($string)
+{
+	if (isset($_POST[$string]))
+	{
+		$array = array();
+		$array = explode(",",$_POST[$string]); //explodes on ","
+		// Trim spaces off each element in the array
+		foreach ($array as $elem)
+			$elem = trim($elem);
+		$_POST[$string] = $array;	
 	}
 }
 
