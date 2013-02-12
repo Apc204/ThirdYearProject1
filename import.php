@@ -8,16 +8,16 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 	switch ($_GET['software'])
 	{
 		case 'Zotero':
-			$redirectpage = 'zoteroImport.php';
+			$redirectpage = 'Auth1.php?destination=zoteroImport';
 			break;
 		case 'Mendeley':
-			$redirectpage = 'Auth1.php';
+			$redirectpage = 'Auth1.php?destination=Auth2';
 			break;
 		case 'EndNote':
-			$redirectpage = 'endNoteImport.php';
+			$redirectpage = 'Auth1.php?destination=endNoteImport';
 			break;
 		case 'Refworks':
-			$redirectpage = 'refworksImport.php';
+			$redirectpage = 'Auth1.php?destination=refworksImport';
 			break;
 	}
 	header('Location: '.$redirectpage);
@@ -70,6 +70,6 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 		</select><br>
 		
 		<input type="submit" value="Submit" class="btn btn-primary">
-	<form>
+	</form>
 
 </body>

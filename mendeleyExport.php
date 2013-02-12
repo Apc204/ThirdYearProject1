@@ -73,13 +73,11 @@ HTTP::redirect('attachFiles.php');
 //Set up consumer to authorise user-specific requests.
 function setUp()
 {
-	echo 'Set up correctly1';
 	$consumer = new HTTP_OAuth_Consumer('d8e4a5bdaedbd31f6f322437d0a38c1805060529f','161a05857f0c8293e067644f01f0d12d', $_SESSION['token'], $_SESSION['token_secret']);
 	$consumer->getAccessToken('http://api.mendeley.com/oauth/access_token/',$_GET['oauth_verifier'],array(),'GET');
 	//$_SESSION['token'] = $consumer->getToken();
 	//$_SESSION['token_secret'] = $consumer->getTokenSecret();
-	$_SESSION['consum'] = $consumer; //copies the consumer variable to a session variable.
-	echo 'Set up correctly2';
+	$_SESSION['consum'] = clone($consumer); //copies the consumer variable to a session variable.
 	return $consumer;
 	
 }
