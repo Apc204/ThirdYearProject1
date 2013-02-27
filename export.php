@@ -9,10 +9,10 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 	switch ($_GET['software'])
 	{
 		case 'Zotero':
-			$redirectpage = 'zoteroExport.php';
+			$redirectpage = 'Auth1.php?destination=zoteroExport';
 			break;
 		case 'Mendeley':
-			$redirectpage = 'Auth1.php';
+			$redirectpage = 'Auth1.php?destination=mendeleyExport';
 			break;
 		case 'EndNote':
 			$redirectpage = 'endNoteExport.php';

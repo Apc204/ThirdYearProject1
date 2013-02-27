@@ -78,11 +78,8 @@ if (!(isset($_GET['oauth_token']) && !empty($_GET['oauth_token'])))
 				parseArray('keywords', $doc);
 				parseArray('tags', $doc);
 				parseNames('producers', $doc);*/
-			}
-			
-		}
-		
-		
+			}	
+		}		
 	}
 	HTTP::redirect('library.php');
 }

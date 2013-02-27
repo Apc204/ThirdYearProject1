@@ -46,32 +46,45 @@ if (isset($_GET['filesToUpload']) && !empty($_GET['filesToUpload']))
 	{
 		//Print_r($_SESSION['currentDocs']);
 		$title = '\''.$file.'\'';
-		$id = $_SESSION['filesUploading'][$file]['id'];
-		Print_r($id);
+		$id = $_SESSION['filesUploading'][$file]['id']; // finds ID of current file in the 'for loop'
+		//Print_r($id);
 		$filename = $_SESSION['filesUploading'][$file]['file'];
 		$consumer = clone($_SESSION['consum']);
 		$additional = array();
 		//$additional['id'] = $id;
 		$hash = sha1('\''.$filename.'\'');
-		//$additional['Content-Disposition'] = 'attachment; filename="'.$filename.'"';
-		$additional['body_hash'] = $hash;
-		$response = $consumer->sendRequest('http://www.mendeley.com/oapi/library/documents/'.$id.'/', $additional ,'PUT');
-		//$consumReq = clone $consumer->getOAuthConsumerRequest();
-		//$authType = $consumReq->getAuthForHeader();
-		//Print_r($authType);
-		//$token = $consumer->getToken();
-		//$authString = 'OAuth realm:"",oauth_body_hash="'.$hash.'", oauth_version="1.0", oauth_token="'.$token.'", oauth_nonce=""';
-		//echo 'test';
-		/*
-		$http_options = array('timeout' => '10');
-		$http_request = new HTTP_Request2('http://www.mendeley.com/oapi/library/documents/'.$id.'/', HTTP_Request2::METHOD_PUT, $http_options);
-		$http_request->setHeader('Content-Disposition', 'attachment; filename="'.$filename.'"');
-		$http_request->setHeader('Authorization', $authorization_header);
-		$http_request->setBody($user_message);*/
+		$content = "attachment; filename=\"$filename\"";
+		
+		$params = array(
+            'oauth_consumer_key'     => $consumer->getKey(),
+            'oauth_signature_method' => $consumer->getSignatureMethod()
+        );
+		
+		if ($consumer->getToken()) {
+					$params['oauth_token'] = $consumer->getToken();
+				}
+		$params['oauth_body_hash'] = $hash;
+		$params = array_merge($additional, $params);
 
-		//echo $httpReq->getHeaders();
-		$output = $response->getDataFromBody();
-		Print_r($output); 
+		$req = clone $consumer->getOAuthConsumerRequest();
+
+		$req->setUrl('http://www.mendeley.com/oapi/library/documents/'.$id.'/');
+		$req->setMethod('PUT');
+		$req->setSecrets($req->getSecrets());
+		$req->setParameters($params);
+		$req->buildRequest();
+		$request = $req->getHTTPRequest2();
+		$request->setHeader('Content-Disposition', $content);
+		$request->setBody("Data: $id");
+		$response = $request->send();
+		echo'<br>RESPONSE:<br>';
+		Print_r($response);
+		
+		
+		//$additional['Content-Disposition'] = $content;
+		//$additional['content-type'] = 'application/x-www-form-urlencoded';
+		//$response = $consumer->sendRequest('http://www.mendeley.com/oapi/library/documents/'.$id.'/', $additional ,'PUT');
+		
 	}
 }
 else

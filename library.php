@@ -39,13 +39,14 @@ session_start();
 //$_SESSION['currentDocs'] = array();
 if (isset($_SESSION['currentDocs']) && !empty($_SESSION['currentDocs']))
 {
+	//Print_r($_SESSION['currentDocs']);
 	echo '<legend>Documents currently in library:</legend>';
 	foreach ($_SESSION['currentDocs'] as $title)
 	{
 		$url = 'showDetails.php?title='.str_replace(' ','_', $title['title']);
 		$url = str_replace('"','',$url);
 		//echo $title['title'].'<form action="'.$url.'">
-				//				<input type="submit" value="View Details"></form>';
+			//					<input type="submit" value="View Details"></form>';
 		echo '<b>'.$title['title'].'</b>&nbsp;<a href="'.$url.'"><input type="Button" class="btn" value="Show Details"> </a><br><br>';
 	} // echo title and button taking user to "showDetails.php"
 }

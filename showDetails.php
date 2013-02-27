@@ -8,7 +8,8 @@ if (isset($_GET['title']) && !empty($_GET['title']))
 	{
 		if (str_replace(' ','_',$current['title']) == $_GET['title'])
 		{
-			Print_r(str_replace(',',',<br>',json_encode($current)));
+			Print_r($current);
+			//Print_r(str_replace(',',',<br>',json_encode($current)));
 		}
 	}
 }
