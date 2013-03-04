@@ -40,8 +40,11 @@ require_once 'HTTP.php';
 session_start();
 
 $consumer = setUp();
-//$additional['content-type'] = 'application/json';
-//$additional['Zotero-API-Version'] = 2;
+
+
+
+//$json = getTemplate('book', $consumer);
+
 
 // Set up a HTTP request ready to add the document.
 $params = array(
@@ -51,33 +54,14 @@ $params = array(
 if ($consumer->getToken()) {
             $params['oauth_token'] = $consumer->getToken();
         }
-$params = array_merge($additional, $params);
+//$params = array_merge($additional, $params);
 
 $req = clone $consumer->getOAuthConsumerRequest();
-
-$req->setUrl('https://api.zotero.org/users/1294934/items?key=1iYXhQ3BaKGOzTly106cLiSx');
-$req->setMethod('POST');
-$req->setSecrets($req->getSecrets());
-$req->setParameters($params);
-$req->buildRequest();
-$request = $req->getHTTPRequest2();
-$request->setHeader('content-type', 'application/json');
-$request->setHeader('Zotero-API-Version','2');
-
-foreach($_SESSION['currentDocs'] as $doc) // Loop through the documents currently in the library, set the request body and add the document.
-{
-	$json = getJSON($doc);
-	$request->setBody($additional['document']);
-	Print_r($request->getBody());
-	$response = $request->send();
-	Print_r($response);
-}
-
 $additional['document'] = '{
   "items" : [
     {
       "itemType" : "book",
-      "title" : "My Book",
+      "title" : "EXAMPLE",
       "creators" : [
         {
           "creatorType":"author",
@@ -97,13 +81,31 @@ $additional['document'] = '{
        
       ],
       "relations" : {
-        "owl:sameAs" : "http://zotero.org/groups/1/items/JKLM6543",
-        "dc:relation" : "http://zotero.org/groups/1/items/PQRS6789",
-        "dc:replaces" : "http://zotero.org/users/1/items/BCDE5432"
       }
     }
   ]
 }';
+$req->setUrl('https://api.zotero.org/users/1294934/items?key=1iYXhQ3BaKGOzTly106cLiSx');
+$req->setMethod('POST');
+$req->setSecrets($req->getSecrets());
+$req->setParameters($params);
+$req->buildRequest();
+$request = $req->getHTTPRequest2();
+//$request->setHeader('content-type', 'application/json');
+$request->setHeader('Zotero-API-Version','2');
+
+foreach($_SESSION['currentDocs'] as $doc) // Loop through the documents currently in the library, set the request body and add the document.
+{
+	$json = getJSON($doc, $consumer);
+	unset($json['relations']);
+	$request->setBody('{ "items" : ['.json_encode($json).']}');
+	//$request->setBody($additional['document']);
+	Print_r($request->getBody());
+	$response = $request->send();
+	Print_r($response);
+}
+
+
 
 /*$request = new HTTPRequest2('https://api.zotero.org/users/1294934/items?key=1iYXhQ3BaKGOzTly106cLiSx');
 $request->setMethod(HTTP_Request2::METHOD_POST);
@@ -116,56 +118,360 @@ $request->setHeader('');*/
 //Print_r($response);
 
 
-function getJSON($doc)
+function getJSON($doc, $consumer)
 {
+
 	if($doc['type'] == 'Book')
-		return parseBook($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('book', $consumer)),true);
+		parseBook($doc);
+	}
 	else if ($doc['type'] == 'Bill')
-		return parseBill($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('bill', $consumer)),true);		
+		parseBill($doc);
+	}
 	else if ($doc['type'] == 'Book Section')
-		return parseBookSection($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('bookSection', $consumer)), true);
+		Print_r($_SESSION['tempDoc']);
+		parseBookSection($doc);
+		echo '<br>Parsed:<br>';
+		Print_r($_SESSION['tempDoc']);
+	}
 	else if ($doc['type'] == 'Case')
-		return parseCase($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('case', $consumer)),true);
+		parseCase($doc);
+	}
 	else if ($doc['type'] == 'Computer Program')
-		return parseComputerProgram($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('computerProgram', $consumer)),true);
+		parseComputerProgram($doc);
+	}
 	else if ($doc['type'] == 'Conference Proceedings')
-		return parseConferenceProceedings($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('conferencePaper', $consumer)),true);
+		parseConferenceProceedings($doc);
+	}
 	else if($doc['type'] == 'Encyclopedia Article')
-		return parseEncyclopediaArticle($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('encyclopediaArticle', $consumer)),true);
+		parseEncyclopediaArticle($doc);
+	}
 	else if ($doc['type'] == 'Film')
-		return parseFilm($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('film', $consumer)),true);
+		parseFilm($doc);
+	}
 	else if ($doc['type'] == 'Generic')
-		return parseGeneric($doc);
+	{
+	}
 	else if ($doc['type'] == 'Hearing')
-		return parseHearing($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('hearing', $consumer)),true);
+		parseHearing($doc);
+	}
 	else if ($doc['type'] == 'Journal Article')
-		return parseJournalArticle($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('journalArticle', $consumer)),true);
+		parseJournalArticle($doc);
+	}
 	else if ($doc['type'] == 'Magazine Article')
-		return parseMagazineArticle($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('magazineArticle', $consumer)),true);
+		parseMagazineArticle($doc);
+	}
 	else if ($doc['type'] == 'Newspaper Article')
-		return parseNewspaperArticle($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('newspaperArticle', $consumer)),true);
+		parseNewspaperArticle($doc);
+	}
 	else if ($doc['type'] == 'Patent')
-		return parsePatent($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('patent', $consumer)),true);
+		parsePatent($doc);
+	}
 	else if ($doc['type'] == 'Report')
-		return parseReport($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('report', $consumer)),true);
+		parseReport($doc);
+	}
 	else if ($doc['type'] == 'Statute')
-		return parseStatute($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('statute', $consumer)),true);
+		parseStatute($doc);
+	}
 	else if ($doc['type'] == 'Television Broadcast')
-		return parseTelevisionBroadcast($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('tvBroadcast', $consumer)),true);
+		parseTelevisionBroadcast($doc);
+	}
 	else if ($doc['type'] == 'Thesis')
-		return parseThesis($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('thesis', $consumer)),true);
+		parseThesis($doc);
+	}
 	else if ($doc['type'] == 'Web Page')
-		return parseWebPage($doc);
+	{
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('webPpge', $consumer)),true);
+		parseWebPage($doc);
+	}
 	else if ($doc['type'] == 'Working Paper')
-		return parseWorkingPaper($doc);
+	{
+		
+	}
+	return $_SESSION['tempDoc'];
+}
+
+function getTemplate($string, $consumer)
+{
+	// Set up a HTTP request ready to add the document.
+	$params = array(
+				'oauth_consumer_key'     => $consumer->getKey(),
+				'oauth_signature_method' => $consumer->getSignatureMethod()
+			);
+	if ($consumer->getToken()) {
+				$params['oauth_token'] = $consumer->getToken();
+			}
+
+
+	$req = clone $consumer->getOAuthConsumerRequest();
+
+	$req->setUrl('https://api.zotero.org/items/new/?itemType='.$string);
+	//$req->setUrl('https://api.zotero.org/itemTypes');
+	$req->setMethod('GET');
+	$req->setSecrets($req->getSecrets());
+	$req->setParameters($params);
+	$req->buildRequest();
+	$request = $req->getHTTPRequest2();
+	$request->setHeader('Zotero-API-Version','2');
+	$response = $request->send();
+	//Print_r($response->getBody());
+	return json_decode($response->getBody());
+	//$response = $consumer->sendRequest('https://api.zotero.org/users/1294934/items/new?itemType=book&key=1iYXhQ3BaKGOzTly106cLiSx',array(),'GET');
+	//Print_r($response->getBody());
+}
+
+function parseMagazineArticle($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('pages',$doc, 'pages');
+	convertField('original_publication', $doc, 'publicationTitle');
+}
+
+function parseJournalArticle($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'contributor');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('issue', $doc);
+	convertField('pages', $doc, 'pages');
+	convertField('original_publication', $doc, 'publicationTitle');
+	convertField('volume', $doc, 'volume');
+}
+
+function parseHearing($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'contributor');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('city', $doc);
+	convertField('comitee', $doc);
+	convertField('pages', $doc, 'pages');
+	convertField('publisher', $doc);
+}
+
+function parseFilm($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'director');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('length', $doc);
+	convertField('producer', $doc, 'distributor');
+}
+
+function parseEncyclopediaArticle($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('edition', $doc);
+	convertField('originalPublication', $doc, 'encyclopediaTitle');
+	convertField('publisher', $doc);
+	convertField('seriesNumber', $doc);
+}
+
+function parseConferenceProceedings($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('city', $doc);
+	convertField('pages', $doc, 'pages');
+	convertField('publisher', $doc);
+}
+
+function parseComputerProgram($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'programmer');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('city', $doc);
+	convertField('revisionNumber', $doc);
+}
+
+function parseCase($doc)
+{
+	convertField('title', $doc, 'caseName');
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc, 'dateDecided');
+	convertField('volume', $doc);
+}
+
+function parseBill($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'sponsor');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('code', $doc);
+	convertField('codeVolume', $doc);	
 }
 
 function parseBook($doc)
 {	
-	
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	//convertArray('keywords', $doc);
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('city', $doc);
+	convertField('edition', $doc);
+	//convertArray('editors', $doc);
+	convertField('pages', $doc);
+	convertField('publisher', $doc);
 }
 
+function parseBookSection($doc)
+{
+	convertField('title',$doc);
+	convertNames('authors', $doc);
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	//convertField('chapter', $doc);
+	convertField('city', $doc);
+	convertField('edition', $doc);
+	convertField('originalPublication',$doc);
+	convertField('publisher', $doc);
+}
 
+function convertField($field, $doc, $forcefield='')
+{
+	$respectiveField = getNewField($field, $forcefield);
+	if (isset($doc[$field]) && !empty($doc[$field]))
+	{
+		$_SESSION['tempDoc'][$respectiveField] = $doc[$field];
+	}
+}
+
+function convertArray($field, $doc)
+{
+	$respectiveField = getNewField($field);
+	if (isset($doc[$field]) && !empty($doc[$field]))
+	{
+		$index = 0;
+		foreach($doc[$field] as $elem)
+		{
+			$_SESSION['tempDoc'][$respectiveField][$index]['tag'] = $elem;
+			$index++;
+		}
+	}
+}
+
+function convertNames($field, $doc, $type)
+{
+	$respectiveField = getNewField($field);
+	if (isset($doc[$field]) && !empty($doc[$field]))
+	{
+		$index = 0;
+		foreach ($doc[$field] as $author)
+		{
+			$_SESSION['tempDoc'][$respectiveField][$index]['creatorType'] = $type;
+			$_SESSION['tempDoc'][$respectiveField][$index]['firstName'] = $doc[$field][$index]['forename'];
+			$_SESSION['tempDoc'][$respectiveField][$index]['lastName'] = $doc[$field][$index]['surname'];
+			$index++;
+		}
+		
+	}
+}
+
+function getNewField($field, $forcefield = '')
+{
+	if ($forcefield != '')
+		return $forcefield;
+	$newfield = '';
+	if ($field == 'authors')
+		return $newfield = 'creators';
+	else if ($field == 'tags')
+		return $newfield = 'tags';
+	else if ($field == 'website')
+		return $newfield = 'url';
+	else if ($field == 'city')
+		return $newfield = 'place';
+	else if ($field == 'year')
+		return $newfield = 'date';
+	else if ($field == 'title')
+		return $newfield = 'title';
+	else if ($field == 'edition')
+		return $newfield = 'edition';
+	else if ($field == 'pages')
+		return $newfield = 'numPages';
+	else if ($field == 'publisher')
+		return $newfield = 'publisher';
+	else if ($field == 'originalPublication')
+		return $newfield = 'bookTitle';
+	else if ($field == 'code')
+		return $newfield = 'code';
+	else if ($field == 'codeVolume')
+		return $newfield = 'codeVolume';
+	else if ($field == 'volume')
+		return $newfield = 'reporterVolume';
+	else if ($field == 'revisionNumber')
+		return $newfield = 'version';
+	else if ($field == 'seriesNumber')
+		return $newfield = 'seriesNumber';
+	else if ($field == 'length')
+		return $newfield = 'runningTime';
+	else if ($field == 'comitee')
+		return $newfield = 'comitee';
+	else if ($field == 'issue')
+		return $newfield = 'issue';
+	else if ($field == 'publication')
+		return $newfield = 'publication';
+	return $newfield;
+}
 
 function setUp()
 {

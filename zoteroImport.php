@@ -135,6 +135,7 @@ function addDocuments ()
 	{
 		if($_SESSION['zotDocs'][$doc]['itemType'] == 'book')
 		{
+			Print_r($_SESSION['zotDocs'][$doc]);
 			$_SESSION['currentDocs'][$doc]['type'] = 'Book';
 			addSingleField('title', $doc);
 			addNames('creators', $doc);
@@ -197,7 +198,7 @@ function getNewField($field)
 	if ($field == 'place')
 		$newfield = 'city';
 	if ($field == 'date')
-		$newfield = 'date';
+		$newfield = 'year';
 	if ($field == 'title')
 		$newfield = 'title';
 	if ($field == 'edition')

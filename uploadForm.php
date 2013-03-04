@@ -149,6 +149,12 @@ if(isset($_GET['type']) && !empty($_GET['type']))
 			<input type="submit" name="submit" class="btn btn-primary" value="Next">
 			</form>
 			'; break;
+		case 'Magazine Article':
+			echo '<label>City:</label> <input type="text" name="city"><br>
+			<label>Pages:</label> <input type="text" name="pages"><br>
+			<label>Original Publication:</label><input type="text" name="original publication"><br>
+			<input type="submit" name="submit" class="btn btn-primary" value="Next">
+			</form>'; break;
 		case 'Patent':
 			echo '<label>Country:</label> <input type="text" name="country"><br>
 			<label>Institution:</label> <input type="text" name="institution"><br>
