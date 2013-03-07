@@ -19,6 +19,9 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 		case 'Refworks':
 			$redirectpage = 'Auth1.php?destination=refworksImport';
 			break;
+		case 'BibTeX':
+			$redirectpage = 'parseBibtex.php';
+			break;
 	}
 	header('Location: '.$redirectpage);
 }
@@ -67,6 +70,7 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 		<option value="Mendeley">Mendeley</option>
 		<option value="EndNote">EndNote</option>
 		<option value="Refworks">Refworks</option>
+		<option value="BibTeX">BibTeX</option>
 		</select><br>
 		
 		<input type="submit" value="Submit" class="btn btn-primary">

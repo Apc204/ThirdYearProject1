@@ -67,7 +67,8 @@ foreach ($_SESSION['currentDocs'] as $doc => $details)
 	Print_r($result);
 }
 
-HTTP::redirect('attachFiles.php');
+echo '<br><br>Documents Added.<br>';
+echo '<a href="index.php"><input type="Button" class="btn" value="Back"> </a>';
 
 
 //Set up consumer to authorise user-specific requests.

@@ -98,14 +98,14 @@ if(isset($_GET['type']) && !empty($_GET['type']))
 			echo '<label>City:</label> <input type="text" name="city"><br>
 			<label>Editors:</label> <input type="text" name="editors"><br>
 			<label>Pages:</label> <input type="text" name="pages"><br>
-			<label>Original Publication:</label> <input type="text" name="original publication"><br>
+			<label>Original Publication:</label> <input type="text" name="originalPublication"><br>
 			<label>Publisher:</label> <input type="text" name="publisher"><br>
 			<input type="submit" name="submit" class="btn btn-primary" value="Next">
 			</form>
 			'; break;
 		case 'Encyclopedia Article':
 			echo '<label>Edition:</label> <input type="text" name="edition"><br>
-			<label>Original Publication:</label> <input type="text" name="original publication"><br>
+			<label>Original Publication:</label> <input type="text" name="originalPublication"><br>
 			<label>Publisher:</label> <input type="text" name="publisher"><br>
 			<label>Series Number:</label> <input type="text" name="seriesNumber"><br>
 			<input type="submit" name="submit" class="btn btn-primary" value="Next">
@@ -145,14 +145,14 @@ if(isset($_GET['type']) && !empty($_GET['type']))
 		case 'Newspaper Article':
 			echo '<label>City:</label> <input type="text" name="city"><br>
 			<label>Pages:</label> <input type="text" name="pages"><br>
-			<label>Original Publication:</label><input type="text" name="original publication"><br>
+			<label>Original Publication:</label><input type="text" name="originalPublication"><br>
 			<input type="submit" name="submit" class="btn btn-primary" value="Next">
 			</form>
 			'; break;
 		case 'Magazine Article':
 			echo '<label>City:</label> <input type="text" name="city"><br>
 			<label>Pages:</label> <input type="text" name="pages"><br>
-			<label>Original Publication:</label><input type="text" name="original publication"><br>
+			<label>Original Publication:</label><input type="text" name="originalPublication"><br>
 			<input type="submit" name="submit" class="btn btn-primary" value="Next">
 			</form>'; break;
 		case 'Patent':
@@ -200,7 +200,7 @@ if(isset($_GET['type']) && !empty($_GET['type']))
 			'; break;
 		case 'Web Page':
 			echo '<label>Date Accessed:</label> <input type="text" name="dateAccessed"><br>
-			<label>Original Publication:</label> <input type="text" name="original publication"><br>
+			<label>Original Publication:</label> <input type="text" name="originalPublication"><br>
 			<input type="submit" name="submit" class="btn btn-primary" value="Next">
 			</form>
 			'; break;
@@ -235,10 +235,10 @@ else
 	<option value="Patent">Patent</option>
 	<option value="Report">Report</option>
 	<option value="Statute">Statute</option>
-	<option value="Television_Broadcast">Television Broadcast</option>
+	<option value="Television Broadcast">Television Broadcast</option>
 	<option value="Thesis">Thesis</option>
-	<option value="Web_Page">Web Page</option>
-	<option value="Working_Paper">Working Paper</option>
+	<option value="Web Page">Web Page</option>
+	<option value="Working Paper">Working Paper</option>
 	</select><br>
 	<input type="submit" value="Submit" class="btn btn-primary">
 	</form>

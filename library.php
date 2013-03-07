@@ -41,13 +41,23 @@ if (isset($_SESSION['currentDocs']) && !empty($_SESSION['currentDocs']))
 {
 	//Print_r($_SESSION['currentDocs']);
 	echo '<legend>Documents currently in library:</legend>';
-	foreach ($_SESSION['currentDocs'] as $title)
+	foreach ($_SESSION['currentDocs'] as $array)
 	{
-		$url = 'showDetails.php?title='.str_replace(' ','_', $title['title']);
+		if (isset($array['title']))
+			$title = $array['title'];
+		else if (isset($array['casename']))
+			$title = $array['caseName'];
+		else if (isset($array['nameOfAct']))
+			$title = $array['nameOfAct'];
+		else if (isset($array['casename']))
+			$title = $array['caseName'];
+		else
+			Print_r($array);
+		$url = 'showDetails.php?title='.str_replace(' ','_', $title);
 		$url = str_replace('"','',$url);
 		//echo $title['title'].'<form action="'.$url.'">
 			//					<input type="submit" value="View Details"></form>';
-		echo '<b>'.$title['title'].'</b>&nbsp;<a href="'.$url.'"><input type="Button" class="btn" value="Show Details"> </a><br><br>';
+		echo '<b>'.$title.'</b>&nbsp;<a href="'.$url.'"><input type="Button" class="btn" value="Show Details"> </a><br><br>';
 	} // echo title and button taking user to "showDetails.php"
 }
 

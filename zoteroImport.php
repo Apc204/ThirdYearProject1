@@ -77,19 +77,29 @@ function displayCheckboxes($consumer, $docs)
 	echo '<form action="zoteroImport.php" method="GET" class="well">';
 	foreach ($docs as $elem)
 	{
-		$choice = 'choices'.$count;
-		$choice = str_replace("\"","",$choice);
+		
 		$elem = substr($elem, strpos($elem, '{'));
 		$newStr = getJSON($elem);
 		foreach ($newStr as $json)
 		{
 			if ($json != '')
 			{
+				$choice = 'choices'.$count;
+				$choice = str_replace("\"","",$choice);
 				//echo '<br> Array:<br>';
 				$array = json_decode($json, TRUE);
 				//Print_r($array);
-				$_SESSION['zotDocs'][str_replace(" ","_",$array['title'])] = $array;
-				echo '<label class="checkbox">'.$array['title'].'<input type="checkbox" name='.$choice.' value='.str_replace(" ","_",$array['title']).'></label>';
+				
+				if (isset($array['title']))
+					$title = $array['title'];
+				else if (isset($array['casename']))
+					$title = $array['caseName'];
+				else if (isset($array['nameOfAct']))
+					$title = $array['nameOfAct'];
+				else if (isset($array['casename']))
+					$title = $array['caseName'];
+				$_SESSION['zotDocs'][str_replace(" ","_",$title)] = $array;
+				echo '<label class="checkbox">'.$title.'<input type="checkbox" name='.$choice.' value='.str_replace(" ","_",$title).'></label>';
 				$count++;
 			}
 		}
@@ -147,24 +157,233 @@ function addDocuments ()
 			addSingleField('publisher', $doc);
 			addSingleField('numPages', $doc);
 		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'bill')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Bill';
+			addSingleField('title', $doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('code', $doc);
+			addSingleField('codeVolume', $doc);
+			addSingleField('pages', $doc);
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'bookSection')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Book Section';
+			addSingleField('title', $doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date', $doc, 'year');
+			addSingleField('place',$doc,'city');
+			addSingleField('edition',$doc);
+			addSingleField('bookTitle',$doc, 'originalPublication');
+			addSingleField('publisher',$doc);
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'case')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Case';
+			addSingleField('title', $doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date', $doc, 'year');
+			addSingleField('court',$doc, 'counsel');
+			addSingleField('reporterVolume',$doc, 'volume');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'computerProgram')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Computer Program';
+			addSingleField('title', $doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date', $doc, 'year');
+			addSingleField('place', $doc, 'city');
+			addSingleField('company', $doc, 'publisher');
+			addSingleField('version', $doc, 'revisionNumber');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'conferenceProceedings')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Conference Proceedings';
+			addSingleField('title', $doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date', $doc, 'year');
+			addSingleField('place', $doc, 'city');
+			addSingleField('pages', $doc, 'city');
+			addSingleField('conferenceName', $doc, 'originalPublication');
+			addSingleField('publisher', $doc, 'publisher');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'encyclopediaArticle')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Encyclopedia Article';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date', $doc, 'year');
+			addSingleField('edition',$doc);
+			addSingleField('encyclopediaTitle',$doc,'originalPublication');
+			addSingleField('publisher', $doc, 'publisher');
+			addSingleField('seriesNumber',$doc,'seriesNumber');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'film')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Film';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date', $doc, 'year');
+			addSingleField('distributor',$doc, 'publisher');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'hearing')
+		{
+			Print_r($_SESSION['zotDocs'][$doc]);
+			$_SESSION['currentDocs'][$doc]['type'] = 'Hearing';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('place',$doc,'city');
+			addSingleField('committee',$doc,'committee');
+			addSingleField('pages',$doc,'pages');
+			addSingleField('publisher',$doc,'publisher');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'journalArticle')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Journal Article';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('issue',$doc,'issue');
+			addSingleField('pages',$doc,'pages');
+			addSingleField('publication',$doc,'publication');
+			addSingleField('volume',$doc,'volume');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'magazineArticle')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Magazine Article';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('pages',$doc,'pages');
+			addSingleField('publication',$doc,'originalPublication');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'newspaperArticle')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Newspaper Article';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('place', $doc,'city');
+			addSingleField('pages',$doc,'pages');
+			addSingleField('publication',$doc,'originalPublication');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'patent')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Patent';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('issueDate',$doc,'year');
+			addSingleField('place', $doc,'country');
+			addSingleField('issuingAuthority',$doc,'institution');
+			addSingleField('pages',$doc,'pages');
+			addSingleField('assignee', $doc,'owner');
+			addSingleField('patentNumber',$doc,'revisionNumber');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'report')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Report';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('place',$doc,'city');
+			addSingleField('institution',$doc,'institution');
+			addSingleField('pages',$doc,'pages');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'statute')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Statute';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('dateEnacted',$doc,'year');
+			addSingleField('code',$doc, 'code');
+			addSingleField('codeNumber', $doc, 'codeNumber');
+			addSingleField('pages',$doc,'pages');
+			addSingleField('publicLawNumber', $doc, 'publicLawNumber');
+			addSingleField('history',$doc,'history');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'tvBroadcast')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Television Broadcast';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('place',$doc,'country');
+			addSingleField('length',$doc,'runningTime');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'thesis')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Thesis';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('university',$doc,'institution');
+			addSingleField('pages',$doc,'pages');
+			addSingleField('type',$doc,'userType');
+		}
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'webPage')
+		{
+			$_SESSION['currentDocs'][$doc]['type'] = 'Web Page';
+			addSingleField('title',$doc);
+			addNames('creators', $doc);
+			addArrayField('tags', $doc);
+			addSingleField('url', $doc);
+			addSingleField('date',$doc,'year');
+			addSingleField('accessDate',$doc,'dateAccessed');
+		}
 	}
 }
 
-function addSingleField ($field, $doc)
+function addSingleField ($field, $doc, $forcefield='')
 {
-	$respectiveField = getNewField($field, $doc);
+	$respectiveField = getNewField($field, $forcefield);
 	if(isset($_SESSION['zotDocs'][$doc][$field]) && !empty($_SESSION['zotDocs'][$doc][$field]))
 		$_SESSION['currentDocs'][$doc][$respectiveField] = $_SESSION['zotDocs'][$doc][$field];
+	else
+		echo 'The variable '.$field.' was probably named wrong.';
 }
 
-function addNames ($field, $doc)
+function addNames ($field, $doc, $forcefield='')
 {
-	$respectiveField = getNewField($field, $doc);
+	$respectiveField = getNewField($field, $forcefield);
 	if (isset($_SESSION['zotDocs'][$doc][$field]) && !empty($_SESSION['zotDocs'][$doc][$field]))
 	{
 		$index = 0;
 		foreach ($_SESSION['zotDocs'][$doc][$field] as $author)
 		{
+			echo 'Doc name: '.$doc.', respective field: '.$respectiveField;
 			$_SESSION['currentDocs'][$doc][$respectiveField][$index]['forename'] = $_SESSION['zotDocs'][$doc][$field][$index]['firstName'];
 			$_SESSION['currentDocs'][$doc][$respectiveField][$index]['surname'] = $_SESSION['zotDocs'][$doc][$field][$index]['lastName'];
 			$index++;
@@ -172,9 +391,9 @@ function addNames ($field, $doc)
 	}
 }
 
-function addArrayField ($field, $doc)
+function addArrayField ($field, $doc, $forcefield='')
 {
-	$respectiveField = getNewField($field);
+	$respectiveField = getNewField($field, $forcefield);
 	if (isset($_SESSION['zotDocs'][$doc][$field]) && !empty($_SESSION['zotDocs'][$doc][$field]))
 	{
 		$index = 0;
@@ -186,8 +405,12 @@ function addArrayField ($field, $doc)
 	}
 }
 
-function getNewField($field)
+function getNewField($field, $forcefield='')
 {
+	if ($forcefield !='')
+	{
+		return $newfield = $forcefield;
+	}
 	$newfield = '';
 	if ($field == 'creators')
 		$newfield = 'authors';
@@ -207,6 +430,12 @@ function getNewField($field)
 		$newfield = 'pages';
 	if ($field == 'publisher')
 		$newfield = 'publisher';
+	if ($field == 'code')
+		$newfield == 'code';
+	if ($field == 'codeVolume')
+		$newfield == 'codeVolume';
+	if ($field == 'pages')
+		$newfield == 'pages';
 	return $newfield;
 }
 

@@ -166,6 +166,7 @@ function getJSON($doc, $consumer)
 	}
 	else if ($doc['type'] == 'Generic')
 	{
+		echo 'Could not import '.$doc.', Generic type not supported in Zotero.';
 	}
 	else if ($doc['type'] == 'Hearing')
 	{
@@ -214,12 +215,12 @@ function getJSON($doc, $consumer)
 	}
 	else if ($doc['type'] == 'Web Page')
 	{
-		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('webPpge', $consumer)),true);
+		$_SESSION['tempDoc'] = json_decode(json_encode(getTemplate('webPage', $consumer)),true);
 		parseWebPage($doc);
 	}
 	else if ($doc['type'] == 'Working Paper')
 	{
-		
+		echo 'Could not import '.$doc.', Working Paper\'s not supported in Zotero.';
 	}
 	return $_SESSION['tempDoc'];
 }
@@ -251,6 +252,91 @@ function getTemplate($string, $consumer)
 	return json_decode($response->getBody());
 	//$response = $consumer->sendRequest('https://api.zotero.org/users/1294934/items/new?itemType=book&key=1iYXhQ3BaKGOzTly106cLiSx',array(),'GET');
 	//Print_r($response->getBody());
+}
+
+function parseWebPage($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('dateAccessed', $doc, 'accessDate');
+	convertField('publication', $doc, 'websiteTitle');
+}
+
+function parseThesis($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('institution', $doc, 'university');
+	convertField('pages', $doc, 'pages');
+	convertField('userType', $doc, 'type');
+}
+
+function parseTelevisionBroadcast($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'director');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('country', $doc, 'place' );
+	convertField('length', $doc, 'runningTime');	
+}
+
+function parseStatute($doc)
+{
+	convertField('title', $doc, 'nameOfAct');
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc, 'dateEnacted');
+	convertField('code', $doc);
+	convertField('codeNumber', $doc);
+	convertField('pages', $doc, 'pages');
+	convertField('publicLawNumber', $doc, 'publicLawNumber');
+	convertField('revisionNumber', $doc, 'history');
+}
+
+function parseReport($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('city', $doc);
+	convertField('pages', $doc, 'pages');
+	convertField('institution', $doc, 'institution');
+}
+
+function parsePatent($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'inventor');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc, 'filingDate');
+	convertField('pages', $doc, 'pages');
+	convertField('revisionNumber',  $doc, 'patentNumber');
+	convertField('institution',$doc,'issuingAuthority');
+	convertField('owner',$doc,'assignee');
+}
+
+function parseNewspaperArticle($doc)
+{
+	convertField('title', $doc);
+	convertNames('authors', $doc, 'author');
+	convertArray('tags', $doc);
+	convertField('website', $doc);
+	convertField('year', $doc);
+	convertField('city', $doc);
+	convertField('pages', $doc, 'pages');
+	convertField('original_publication', $doc, 'publicationTitle');
 }
 
 function parseMagazineArticle($doc)
@@ -456,6 +542,8 @@ function getNewField($field, $forcefield = '')
 		return $newfield = 'code';
 	else if ($field == 'codeVolume')
 		return $newfield = 'codeVolume';
+	else if ($field == 'codeNumber')
+		return $newfield = 'codeNumber';
 	else if ($field == 'volume')
 		return $newfield = 'reporterVolume';
 	else if ($field == 'revisionNumber')
