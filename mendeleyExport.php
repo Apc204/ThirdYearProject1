@@ -41,35 +41,59 @@ require_once 'HTTP.php';
 
 session_start();
 
-$_SESSION['docs'] = array();
-$consumer = setUp();
-$additional = array();
+
 //$additional['document'] =  '{"type":"Film","title":"Godfather"}';
 //$additional[] = json_encode($_SESSION['currentDocs']['The Machinist']);
 //Print_r($additional);
 
-foreach ($_SESSION['currentDocs'] as $doc => $details)
+if (isset($_SESSION['set']) && !empty($_SESSION['set']))
 {
-	$additional['document'] = $details;
-	unset($additional['document']['submit']);
-	unset($additional['document']['Submit']);
-	unset($additional['document']['file']);
-	unset($additional['document']['File']);
-	$additional['document'] = /*str_replace(" ","%20",*/json_encode($additional['document']);
-	$response = $consumer->sendRequest('http://api.mendeley.com/oapi/library/documents/', $additional , 'POST');
-	$docs = $response->getDataFromBody();
-	$result = json_decode(array_keys($docs)[0],'true');
-	//Copy the current document into 'filesUploading' and add the returned ID as a field.
-	$_SESSION['filesUploading'] = array();
-	$_SESSION['filesUploading'][$doc] = $details;
-	$_SESSION['filesUploading'][$doc]['id'] = $result['document_id'];
-	//echo $docs[0]['document_id'];
-	Print_r($result);
+	$_SESSION['docs'] = array();
+	$consumer = clone $_SESSION['consum'];
+	$additional = array();
+	unset($_SESSION['set']);
+	foreach ($_GET as $doc)
+	{
+		$additional['document'] = $_SESSION['currentDocs'][str_replace(' ','_',$doc)];
+		unset($additional['document']['submit']);
+		unset($additional['document']['Submit']);
+		unset($additional['document']['file']);
+		unset($additional['document']['File']);
+		$additional['document'] = /*str_replace(" ","%20",*/json_encode($additional['document']);
+		$response = $consumer->sendRequest('http://api.mendeley.com/oapi/library/documents/', $additional , 'POST');
+		$docs = $response->getDataFromBody();
+		$result = json_decode(array_keys($docs)[0],'true');
+		//Copy the current document into 'filesUploading' and add the returned ID as a field.
+		//$_SESSION['filesUploading'] = array();
+		//$_SESSION['filesUploading'][$doc] = $_SESSION['currentDocs'][$doc];
+		//$_SESSION['filesUploading'][$doc]['id'] = $result['document_id'];
+		//echo $docs[0]['document_id'];
+		Print_r($result);
+	}
+	echo '<br><br>Documents Added.<br>';
+	echo '<a href="index.php"><input type="Button" class="btn" value="Back"> </a>';
+}
+else
+{
+	$consumer = setUp();
+	$_SESSION['consum'] = clone $consumer;
+	echo '<legend> Chose documents to upload to Mendley:</legend>';
+	displayCheckboxes();
+	$_SESSION['set'] = 'set';
 }
 
-echo '<br><br>Documents Added.<br>';
-echo '<a href="index.php"><input type="Button" class="btn" value="Back"> </a>';
-
+function displayCheckboxes()
+{
+	$count = 0;
+	echo '<form action="mendeleyExport.php" method="GET" class="well">';
+	foreach($_SESSION['currentDocs'] as $doc)
+	{	
+		$choice = 'choice'.$count;
+		echo '<label class="checkbox">'.$doc['title'].'<input type="checkbox" name="'.$choice.'" value="'.$doc['title'].'"></label>';
+		$count++;
+	}
+	echo '<input type="submit" value="Submit" class="btn btn-primary"><br></form>';
+}
 
 //Set up consumer to authorise user-specific requests.
 function setUp()

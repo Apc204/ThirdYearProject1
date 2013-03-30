@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-$_SESSION['currentDocs'] = array();
+//$_SESSION['currentDocs'] = array();
 /*foreach ($_SESSION['currentDocs'] as $doc)
 {
 	$_SESSION['currentDocs'][$doc['title']]['type'] = 'Film';

@@ -39,84 +39,71 @@ require_once '/HTTP/OAuth/Consumer.php';
 require_once 'HTTP.php';
 session_start();
 
-$consumer = setUp();
 
-
-
-//$json = getTemplate('book', $consumer);
-
-
-// Set up a HTTP request ready to add the document.
-$params = array(
-            'oauth_consumer_key'     => $consumer->getKey(),
-            'oauth_signature_method' => $consumer->getSignatureMethod()
-        );
-if ($consumer->getToken()) {
-            $params['oauth_token'] = $consumer->getToken();
-        }
-//$params = array_merge($additional, $params);
-
-$req = clone $consumer->getOAuthConsumerRequest();
-$additional['document'] = '{
-  "items" : [
-    {
-      "itemType" : "book",
-      "title" : "EXAMPLE",
-      "creators" : [
-        {
-          "creatorType":"author",
-          "firstName" : "Sam",
-          "lastName" : "McAuthor"
-        },
-        {
-          "creatorType":"editor",
-          "name" : "John T. Singlefield"
-        }
-      ],
-      "tags" : [
-        { "tag" : "awesome" },
-        { "tag" : "rad", "type" : 1 }
-      ],
-      "collections" : [
-       
-      ],
-      "relations" : {
-      }
-    }
-  ]
-}';
-$req->setUrl('https://api.zotero.org/users/1294934/items?key=1iYXhQ3BaKGOzTly106cLiSx');
-$req->setMethod('POST');
-$req->setSecrets($req->getSecrets());
-$req->setParameters($params);
-$req->buildRequest();
-$request = $req->getHTTPRequest2();
-//$request->setHeader('content-type', 'application/json');
-$request->setHeader('Zotero-API-Version','2');
-
-foreach($_SESSION['currentDocs'] as $doc) // Loop through the documents currently in the library, set the request body and add the document.
+if (isset($_SESSION['set2']) && !empty($_SESSION['set2']))
 {
-	$json = getJSON($doc, $consumer);
-	unset($json['relations']);
-	$request->setBody('{ "items" : ['.json_encode($json).']}');
-	//$request->setBody($additional['document']);
-	Print_r($request->getBody());
-	$response = $request->send();
-	Print_r($response);
+	unset($_SESSION['set2']);
+	$consumer = clone $_SESSION['consum'];
+
+	//$json = getTemplate('book', $consumer);
+	// Set up a HTTP request ready to add the document.
+	$params = array(
+				'oauth_consumer_key'     => $consumer->getKey(),
+				'oauth_signature_method' => $consumer->getSignatureMethod()
+			);
+	if ($consumer->getToken()) {
+				$params['oauth_token'] = $consumer->getToken();
+			}
+	//$params = array_merge($additional, $params);
+
+	$req = clone $consumer->getOAuthConsumerRequest();
+	$req->setUrl('https://api.zotero.org/users/1294934/items?key=1iYXhQ3BaKGOzTly106cLiSx');
+	$req->setMethod('POST');
+	$req->setSecrets($req->getSecrets());
+	$req->setParameters($params);
+	$req->buildRequest();
+	$request = $req->getHTTPRequest2();
+	//$request->setHeader('content-type', 'application/json');
+	$request->setHeader('Zotero-API-Version','2');
+
+	foreach($_GET as $doc) // Loop through the documents currently in the library, set the request body and add the document.
+	{
+		$document = $_SESSION['currentDocs'][str_replace(' ','_',$doc)];
+		$json = getJSON($document, $consumer);
+		unset($json['relations']);
+		$request->setBody('{ "items" : ['.json_encode($json).']}');
+		//$request->setBody($additional['document']);
+		//Print_r($request->getBody());
+		$response = $request->send();
+		//Print_r($response);
+		
+	}
+	echo '<br><br>Documents Added.<br>';
+	echo '<a href="index.php"><input type="Button" class="btn" value="Back"> </a>';
+}
+else
+{
+	$_SESSION['set2'] = 'set2';
+	displayCheckboxes();
+	$consumer = setUp();
+	$_SESSION['consum'] = clone $consumer;
 }
 
-
-
-/*$request = new HTTPRequest2('https://api.zotero.org/users/1294934/items?key=1iYXhQ3BaKGOzTly106cLiSx');
-$request->setMethod(HTTP_Request2::METHOD_POST);
-$request->setHeader('content-type', 'application/json');
-$request->setHeader('');*/
-
-
-
-//$response = $consumer->sendRequest('https://api.zotero.org/users/1294934/items?key=1iYXhQ3BaKGOzTly106cLiSx',$additional,'POST');
-//Print_r($response);
-
+function displayCheckboxes()
+{
+	$count = 0;
+	echo '<form action="zoteroExport.php" method="GET" class="well">';
+	foreach($_SESSION['currentDocs'] as $doc)
+	{	
+		$choice = 'choice'.$count;
+		if ($doc['type']!='Generic' && $doc['type']!='Working Paper')
+		{
+			echo '<label class="checkbox">'.$doc['title'].'<input type="checkbox" name="'.$choice.'" value="'.$doc['title'].'"></label>';
+		}
+		$count++;
+	}
+	echo '<input type="submit" value="Submit" class="btn btn-primary"><br></form>';
+}
 
 function getJSON($doc, $consumer)
 {
@@ -166,7 +153,7 @@ function getJSON($doc, $consumer)
 	}
 	else if ($doc['type'] == 'Generic')
 	{
-		echo 'Could not import '.$doc.', Generic type not supported in Zotero.';
+		echo 'Could not import '.$doc['title'].', Generic type not supported in Zotero.';
 	}
 	else if ($doc['type'] == 'Hearing')
 	{
@@ -462,7 +449,7 @@ function parseBook($doc)
 function parseBookSection($doc)
 {
 	convertField('title',$doc);
-	convertNames('authors', $doc);
+	convertNames('authors', $doc,'author');
 	convertArray('tags', $doc);
 	convertField('website', $doc);
 	convertField('year', $doc);

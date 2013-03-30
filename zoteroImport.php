@@ -42,6 +42,8 @@ session_start();
 if(!(isset($_GET['oauth_token']) && !empty($_GET['oauth_token'])))
 {
 	addDocuments();
+	echo '<br><br>Documents Added.<br>';
+	echo '<a href="library.php"><input type="Button" class="btn" value="Back"> </a>';
 }
 else
 {
@@ -140,12 +142,15 @@ function getJSON ($string)
 
 function addDocuments ()
 {
-	Print_r($_GET);
+	//Print_r($_GET);
 	foreach ($_GET as $doc)
 	{
+		//echo '<br>';
+		//Print_r($_SESSION['zotDocs'][$doc]['itemType']);
+		//echo '<br>';
 		if($_SESSION['zotDocs'][$doc]['itemType'] == 'book')
 		{
-			Print_r($_SESSION['zotDocs'][$doc]);
+			//Print_r($_SESSION['zotDocs'][$doc]);
 			$_SESSION['currentDocs'][$doc]['type'] = 'Book';
 			addSingleField('title', $doc);
 			addNames('creators', $doc);
@@ -178,13 +183,14 @@ function addDocuments ()
 			addSingleField('date', $doc, 'year');
 			addSingleField('place',$doc,'city');
 			addSingleField('edition',$doc);
-			addSingleField('bookTitle',$doc, 'originalPublication');
+			addSingleField('bookTitle',$doc, 'original_publication');
 			addSingleField('publisher',$doc);
 		}
 		if($_SESSION['zotDocs'][$doc]['itemType'] == 'case')
 		{
 			$_SESSION['currentDocs'][$doc]['type'] = 'Case';
 			addSingleField('title', $doc);
+			addSingleField('caseName', $doc, 'title');
 			addNames('creators', $doc);
 			addArrayField('tags', $doc);
 			addSingleField('url', $doc);
@@ -204,7 +210,7 @@ function addDocuments ()
 			addSingleField('company', $doc, 'publisher');
 			addSingleField('version', $doc, 'revisionNumber');
 		}
-		if($_SESSION['zotDocs'][$doc]['itemType'] == 'conferenceProceedings')
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'conferencePaper')
 		{
 			$_SESSION['currentDocs'][$doc]['type'] = 'Conference Proceedings';
 			addSingleField('title', $doc);
@@ -214,7 +220,7 @@ function addDocuments ()
 			addSingleField('date', $doc, 'year');
 			addSingleField('place', $doc, 'city');
 			addSingleField('pages', $doc, 'city');
-			addSingleField('conferenceName', $doc, 'originalPublication');
+			addSingleField('conferenceName', $doc, 'original_publication');
 			addSingleField('publisher', $doc, 'publisher');
 		}
 		if($_SESSION['zotDocs'][$doc]['itemType'] == 'encyclopediaArticle')
@@ -226,7 +232,7 @@ function addDocuments ()
 			addSingleField('url', $doc);
 			addSingleField('date', $doc, 'year');
 			addSingleField('edition',$doc);
-			addSingleField('encyclopediaTitle',$doc,'originalPublication');
+			addSingleField('encyclopediaTitle',$doc,'original_publication');
 			addSingleField('publisher', $doc, 'publisher');
 			addSingleField('seriesNumber',$doc,'seriesNumber');
 		}
@@ -276,7 +282,7 @@ function addDocuments ()
 			addSingleField('url', $doc);
 			addSingleField('date',$doc,'year');
 			addSingleField('pages',$doc,'pages');
-			addSingleField('publication',$doc,'originalPublication');
+			addSingleField('publication',$doc,'original_publication');
 		}
 		if($_SESSION['zotDocs'][$doc]['itemType'] == 'newspaperArticle')
 		{
@@ -288,7 +294,7 @@ function addDocuments ()
 			addSingleField('date',$doc,'year');
 			addSingleField('place', $doc,'city');
 			addSingleField('pages',$doc,'pages');
-			addSingleField('publication',$doc,'originalPublication');
+			addSingleField('publication',$doc,'original_publication');
 		}
 		if($_SESSION['zotDocs'][$doc]['itemType'] == 'patent')
 		{
@@ -320,6 +326,7 @@ function addDocuments ()
 		{
 			$_SESSION['currentDocs'][$doc]['type'] = 'Statute';
 			addSingleField('title',$doc);
+			addSingleField('nameOfAct',$doc,'title');
 			addNames('creators', $doc);
 			addArrayField('tags', $doc);
 			addSingleField('url', $doc);
@@ -353,7 +360,7 @@ function addDocuments ()
 			addSingleField('pages',$doc,'pages');
 			addSingleField('type',$doc,'userType');
 		}
-		if($_SESSION['zotDocs'][$doc]['itemType'] == 'webPage')
+		if($_SESSION['zotDocs'][$doc]['itemType'] == 'webpage')
 		{
 			$_SESSION['currentDocs'][$doc]['type'] = 'Web Page';
 			addSingleField('title',$doc);

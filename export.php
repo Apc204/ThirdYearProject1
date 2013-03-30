@@ -2,7 +2,8 @@
 session_start();
 
 $_SESSION['currentOp'] = 'export';
-
+unset($_SESSION['set']);
+unset($_SESSION['set2']);
 
 if (isset($_GET['software']) && !empty($_GET['software']))
 {
@@ -19,6 +20,9 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 			break;
 		case 'Refworks':
 			$redirectpage = 'refworksExport.php';
+			break;
+		case 'Bibtex':
+			$redirectpage = 'exportBibtex.php';
 			break;
 	}
 	header('Location: '.$redirectpage);
@@ -66,8 +70,7 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 		<select name="software">
 		<option value="Zotero">Zotero</option>
 		<option value="Mendeley">Mendeley</option>
-		<option value="EndNote">EndNote</option>
-		<option value="Refworks">Refworks</option>
+		<option value="Refworks">BibTeX</option>
 		</select><br>
 		
 		<input type="submit" value="Submit" class="btn btn-primary">

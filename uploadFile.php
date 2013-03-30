@@ -14,7 +14,7 @@ if (isset($_POST['title']) && !empty($_POST['title']))
 	parseArray('tags');
 	
 	//Adds the new document to currentDocs
-	$_SESSION['currentDocs'][$_POST['title']] = $_POST;
+	$_SESSION['currentDocs'][str_replace(' ','_',$_POST['title'])] = $_POST;
 	$_SESSION['oldPOST'] = $_POST;
 	echo 'Document added to library. <br> <legend>Add a file to this document or view library.</legend>';
 	

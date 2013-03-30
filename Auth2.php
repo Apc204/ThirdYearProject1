@@ -68,7 +68,7 @@ if (!(isset($_GET['oauth_token']) && !empty($_GET['oauth_token'])))
 				// Only add allowed details to be added to library
 				if (in_array($index, $allowedFields))
 				{
-					$_SESSION['currentDocs'][$_SESSION['"'.$doc.'"']['title']][$index] = $value;
+					$_SESSION['currentDocs'][str_replace(' ','_',$_SESSION['"'.$doc.'"']['title'])][$index] = $value;
 				}
 				//$_SESSION['currentDocs'][$_SESSION['"'.$doc.'"']['title']] = $_SESSION['"'.$doc.'"'];
 				/*parseNames('authors', $doc);

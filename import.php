@@ -13,12 +13,6 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 		case 'Mendeley':
 			$redirectpage = 'Auth1.php?destination=Auth2';
 			break;
-		case 'EndNote':
-			$redirectpage = 'Auth1.php?destination=endNoteImport';
-			break;
-		case 'Refworks':
-			$redirectpage = 'Auth1.php?destination=refworksImport';
-			break;
 		case 'BibTeX':
 			$redirectpage = 'parseBibtex.php';
 			break;
@@ -68,8 +62,6 @@ if (isset($_GET['software']) && !empty($_GET['software']))
 		<select name="software">
 		<option value="Zotero">Zotero</option>
 		<option value="Mendeley">Mendeley</option>
-		<option value="EndNote">EndNote</option>
-		<option value="Refworks">Refworks</option>
 		<option value="BibTeX">BibTeX</option>
 		</select><br>
 		

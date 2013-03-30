@@ -52,10 +52,10 @@ set_include_path('.;c:\xampp\htdocs\3yp\Application\Uploads');
 
 if (isset($_FILES["file"]) && !empty($_FILES["file"]))
 {
-	echo "Upload: " . $_FILES["file"]["name"] . "<br>";
-	echo "Type: " . $_FILES["file"]["type"] . "<br>";
-	echo "Size: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
-	echo "Stored in: " . $_FILES["file"]["tmp_name"];
+	//echo "Upload: " . $_FILES["file"]["name"] . "<br>";
+	//echo "Type: " . $_FILES["file"]["type"] . "<br>";
+	//echo "Size: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+	//echo "Stored in: " . $_FILES["file"]["tmp_name"];
 	
 	$tmp_name = $_FILES["file"]["tmp_name"];
 	$uploads_dir = 'uploads/';
@@ -63,7 +63,7 @@ if (isset($_FILES["file"]) && !empty($_FILES["file"]))
 	echo '<br>'.$name.'<br>';
 	if (move_uploaded_file($tmp_name, 'uploads/'.$_FILES['file']['name']))
 	{
-		echo 'success';
+		echo 'Successfully Added.';
 	}
 	
 	/*$filename = 'Uploads/'.$name;
@@ -74,13 +74,13 @@ if (isset($_FILES["file"]) && !empty($_FILES["file"]))
 	$bibtex = new Structures_Bibtex();
 	$ret=$bibtex->loadFile('uploads/'.$name);
 
-	if(PEAR::isError($ret)) {
+	/*if(PEAR::isError($ret)) {
 
 		print $ret->getMessage();
 
 		die();
 
-	}
+	}*/
 
 	$bibtex->parse();
 	addtoLibrary($bibtex);
@@ -93,17 +93,17 @@ function addtoLibrary($bibtex)
 	foreach($bibtex->data as $bibDoc)
 	{
 		
-			Print_r($bibDoc);
-			echo'<br>NEXT<Br>';
+			//Print_r($bibDoc);
+			//echo'<br>NEXT<Br>';
 			
 			if ($bibDoc['entryType'] == 'article')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Journal Article';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Journal Article';
 				parseArticle($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'book')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Book';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Book';
 				parseBook($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'booklet')
@@ -112,12 +112,12 @@ function addtoLibrary($bibtex)
 			}
 			else if ($bibDoc['entryType'] == 'conference')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Conference Proceedings';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Conference Proceedings';
 				parseConferenceProceedings($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'inbook')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Book Section';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Book Section';
 				parseInBook($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'incollection')
@@ -126,12 +126,12 @@ function addtoLibrary($bibtex)
 			}
 			else if ($bibDoc['entryType'] == 'inproceedings')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Conference Proceedings';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Conference Proceedings';
 				parseConferenceProceedings($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'mastersthesis')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Thesis';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Thesis';
 				parseThesis($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'misc')
@@ -140,7 +140,7 @@ function addtoLibrary($bibtex)
 			}
 			else if ($bibDoc['entryType'] == 'phdthesis')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Thesis';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Thesis';
 				parseThesis($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'proceedings')
@@ -149,7 +149,7 @@ function addtoLibrary($bibtex)
 			}
 			else if ($bibDoc['entryType'] == 'techreport')
 			{
-				$_SESSION['currentDocs'][$bibDoc['title']]['type'] = 'Report';
+				$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])]['type'] = 'Report';
 				parseReport($bibDoc);
 			}
 			else if ($bibDoc['entryType'] == 'unpublished')
@@ -222,7 +222,7 @@ function parseField($bibDoc, $field, $forcefield)
 {
 	if(isset($bibDoc[$field]) && !empty($bibDoc[$field]))
 	{
-		$_SESSION['currentDocs'][$bibDoc['title']][$forcefield] = $bibDoc[$field];
+		$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])][$forcefield] = $bibDoc[$field];
 	}
 }
 
@@ -233,8 +233,8 @@ function parseNames($bibDoc, $field, $forcefield)
 	{
 		foreach ($bibDoc[$field] as $author)
 		{
-			$_SESSION['currentDocs'][$bibDoc['title']][$forcefield][$index]['forename'] = $bibDoc[$field][$index]['first'];
-			$_SESSION['currentDocs'][$bibDoc['title']][$forcefield][$index]['surname'] = $bibDoc[$field][$index]['last'];
+			$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])][$forcefield][$index]['forename'] = $bibDoc[$field][$index]['first'];
+			$_SESSION['currentDocs'][str_replace(' ','_',$bibDoc['title'])][$forcefield][$index]['surname'] = $bibDoc[$field][$index]['last'];
 		}
 	}
 }

@@ -36,6 +36,11 @@
 
 session_start();
 
+if(isset($_GET['clear']) && !empty($_GET['clear']))
+{
+	if ($_GET['clear'] == 'true')
+		$_SESSION['currentDocs'] = array();
+}
 //$_SESSION['currentDocs'] = array();
 if (isset($_SESSION['currentDocs']) && !empty($_SESSION['currentDocs']))
 {
@@ -62,5 +67,5 @@ if (isset($_SESSION['currentDocs']) && !empty($_SESSION['currentDocs']))
 }
 
 //Print_r($_SESSION['currentDocs']);
-
+echo '<a href="library.php?clear=true"><input type="Button" class="btn" value="Clear Library"> </a>';
 ?>

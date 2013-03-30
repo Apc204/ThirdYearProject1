@@ -16,8 +16,8 @@ if (isset($_GET['title']) && !empty($_GET['title']))
 			$title = $current['caseName'];
 		if (str_replace(' ','_',$title) == $_GET['title'])
 		{
-			Print_r($current);
-			//Print_r(str_replace(',',',<br>',json_encode($current)));
+			//Print_r($current);
+			Print_r(str_replace(',',',<br>',json_encode($current)));
 		}
 	}
 }
